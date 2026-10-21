@@ -8,6 +8,8 @@
 - 58 synthetic smoke tests verified through GitHub Actions.
 - Local-only ASP.NET Core example with HTTP allow/deny checks.
 - Developer quickstart, architecture diagram, integration notes, contribution guide and roadmap.
+- Independent packaged consumer sample: six synthetic checks against the compiled local NuGet artifact.
+- GitHub Actions archives the locally built `.nupkg` as a downloadable workflow artifact.
 
 ## Install from source
 ```bash
