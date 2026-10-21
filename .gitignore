@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+artifacts/
+*.nupkg
+*.snupkg
+.vs/
+.DS_Store
