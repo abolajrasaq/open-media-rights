@@ -1,10 +1,14 @@
 # Open Media Rights Toolkit
 
-> **Preview v0.1.0-preview.1** — not audited or published to NuGet.
+> **Published GitHub pre-release:** [v0.1.0-preview.1](https://github.com/abolajrasaq/open-media-rights/releases/tag/v0.1.0-preview.1) · MIT · .NET 8 · **not audited or published on NuGet.org.**
 
 A dependency-free, .NET 8 media rights permission evaluator. Given a media asset, independently verified licence grants and a request, it returns a typed allow/deny decision for streaming, downloading, sharing, monetization or resale.
 
 **This software does not establish copyright ownership or verify grants.** Your backend must validate rights documents, contractual conflicts and user identity, determine trustworthy territory, and enforce every decision at the point of delivery or transaction.
+
+## Get the preview package
+
+You can download the [compiled `.nupkg` from GitHub Releases](https://github.com/abolajrasaq/open-media-rights/releases/download/v0.1.0-preview.1/OpenMediaRights.0.1.0-preview.1.nupkg), or build it directly from source. The release is **not** a NuGet.org listing and is **not** independently security-audited. For local installation, see the [packaged consumer example](examples/PackageConsumer/README.md).
 
 ## New developer? Start here
 
