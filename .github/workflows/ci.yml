@@ -18,5 +18,27 @@ jobs:
         run: dotnet run --project tests/OpenMediaRights.SmokeTests/OpenMediaRights.SmokeTests.csproj --configuration Release
       - name: Run demo
         run: dotnet run --project examples/BasicUsage/BasicUsage.csproj --configuration Release
+      - name: Build HTTP example
+        run: dotnet build examples/PolicyApi/PolicyApi.csproj --configuration Release
+      - name: HTTP sample smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet run --no-build --project examples/PolicyApi/PolicyApi.csproj --configuration Release > /tmp/omrt-api.log 2>&1 &
+          api_pid=$!
+          trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:5187/demo/info > /dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/omrt-api.log; exit 1; fi
+          test "$(curl -s -o /tmp/allow.json -w '%{http_code}' http://127.0.0.1:5187/demo/rights/stream)" = "200"
+          grep -q '"allowed":true' /tmp/allow.json
+          test "$(curl -s -o /tmp/deny.json -w '%{http_code}' http://127.0.0.1:5187/demo/rights/download)" = "403"
+          grep -q '"allowed":false' /tmp/deny.json
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5187/demo/rights/share)" = "403"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5187/demo/rights/unknown)" = "400"
+          test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:5187/demo/rights/stream?territory=US')" = "200"
       - name: Validate NuGet packaging
         run: dotnet pack src/OpenMediaRights/OpenMediaRights.csproj --configuration Release --output ./artifacts
