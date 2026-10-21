@@ -18,7 +18,7 @@ var outcomes = new (string Name, PermissionRequest Request, DecisionCode Expecte
     ("Download denied without licence grant", new(assetId, MediaAction.Download, "NG", now), DecisionCode.ActionNotGranted),
     ("Ghana streaming denied by territory", new(assetId, MediaAction.Stream, "GH", now), DecisionCode.NoMatchingGrant),
     ("Expired stream licence denied", new(assetId, MediaAction.Stream, "NG", now.AddDays(2)), DecisionCode.GrantNotInEffect),
-    ("Sharing denied by disabled switch", new(assetId, MediaAction.Share, "NG", now), DecisionCode.ActionNotGranted)
+    ("Sharing denied without licence grant", new(assetId, MediaAction.Share, "NG", now), DecisionCode.ActionNotGranted)
 };
 
 var failures = 0;
