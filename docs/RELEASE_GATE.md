@@ -1,27 +1,28 @@
-# Release gate: v0.1.0-preview.1
+# Preview release gate — v0.1.0-preview.1
 
-Status: **Draft / review required**. Green CI is necessary but not proof of legal correctness or production security.
+## Owner approval
+On 2026-10-21, the maintainer authorized publication of the standalone toolkit under MIT. This is authorization to publish a **development preview**, not a claim of independent security certification.
 
-## Verified in GitHub Actions
-- .NET 8 library compiles.
-- 56 deterministic synthetic checks pass (as of the last reviewed successful run).
-- The example application executes.
-- NuGet package construction succeeds. Embedded README and package metadata are being validated in subsequent CI.
+## Verified automated checks
+- .NET 8 build, executable synthetic authorization tests, demo, and NuGet packaging run in GitHub Actions.
+- The latest commit's checks must pass before merge.
 
-## Must verify before merging or tagging
-- [ ] Maintainer confirms they own or may license every public file under MIT.
-- [ ] No proprietary SPRED source, client data, production configurations, credentials or private documentation were copied.
-- [ ] A reviewer examines default-deny behavior, grant precedence, time windows, territory assumptions and potential denial-of-service through large enumerables.
-- [ ] The documentation accurately distinguishes a rights decision from legal ownership or entitlement enforcement.
-- [ ] Latest HEAD CI passes.
-- [ ] Maintainer approves public release.
+## Review performed
+- Checked repository diff and documentation for obvious proprietary SPRED code and secrets; no such material identified in the public package.
+- Reviewed fail-closed asset checks, action switches, territory normalization, grant verification, time-window semantics, and exceptional input handling.
+- Added bounded grant enumeration and negative coverage for Unicode confusables.
 
-## Known limitations / open issues
-- Two-letter territory validation is syntactic, not a complete ISO 3166-1 country list.
-- Grants combine by union. Exclusions, revocations, cross-grant conflicts and exclusivity are not adjudicated by this evaluator.
-- The library does not verify rights documents, authentication, DRM or license ownership.
-- No formal threat model, independently conducted security audit, or consumer integration test has been completed.
-- Consumer application must use trustworthy country information and authoritative grant snapshots.
+## Unresolved release limitations
+- **No independent security audit or formal threat model.** Not production-certified.
+- Upstream systems must verify rights, settle exclusive-grant/exclusion conflicts and obtain trusted territorial information.
+- No authentication, persistence, DRM, contract validation or enforcement endpoints are bundled.
+- No demonstrated external users or adoption yet.
 
-## Publishing policy
-The draft PR must remain unmerged until the maintainer's provenance and security checks are complete. No NuGet push or production-ready claim before those gates.
+Do not represent this package as a legal rights determination or deploy it as the only gate for a commercial media service.
+
+## Shipping
+- [x] Maintainer approval for MIT preview
+- [x] Repository separation from SPRED
+- [x] Preliminary source/security inspection
+- [ ] Latest head GitHub Actions succeeds
+- [ ] Independent audit and external integration (future production milestone)
