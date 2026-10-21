@@ -1,0 +1,79 @@
+name: Publish first preview release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/first-preview-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-open-media-rights-v0.1.0-preview.1
+  cancel-in-progress: false
+
+jobs:
+  release-preview:
+    if: github.repository == 'abolajrasaq/open-media-rights' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+
+      - name: Install .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run policy smoke tests
+        run: dotnet run --project tests/OpenMediaRights.SmokeTests/OpenMediaRights.SmokeTests.csproj -c Release
+
+      - name: Compile local HTTP integration example
+        run: dotnet build examples/PolicyApi/PolicyApi.csproj -c Release
+
+      - name: Check HTTP allow and deny responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet run --no-build --project examples/PolicyApi/PolicyApi.csproj -c Release > /tmp/omrt-preview-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5187/demo/info >/dev/null 2>&1; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/omrt-preview-http.log; exit 1; fi
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5187/demo/rights/stream)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5187/demo/rights/download)" = "403"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5187/demo/rights/share)" = "403"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5187/demo/rights/unknown)" = "400"
+
+      - name: Build preview NuGet artifact
+        run: dotnet pack src/OpenMediaRights/OpenMediaRights.csproj -c Release -o ./artifacts
+
+      - name: Restore independent consumer from package
+        run: dotnet restore examples/PackageConsumer/PackageConsumer.csproj --source "$GITHUB_WORKSPACE/artifacts"
+
+      - name: Run packaged consumer assertions
+        run: dotnet run --no-restore --project examples/PackageConsumer/PackageConsumer.csproj -c Release
+
+      - name: Publish a GitHub prerelease once
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag='v0.1.0-preview.1'
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "GitHub Release $tag already exists; not replacing it."
+            exit 0
+          fi
+          gh release create "$tag" ./artifacts/OpenMediaRights.0.1.0-preview.1.nupkg \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title 'Open Media Rights Toolkit v0.1.0 Preview' \
+            --notes-file docs/PREVIEW_RELEASE_BODY.md \
+            --prerelease
