@@ -30,6 +30,7 @@ Check("no share right", DecisionCode.ActionNotGranted, request: new(assetId, Med
 Check("unknown territory", DecisionCode.NoMatchingGrant, request: new(assetId, MediaAction.Stream, "GH", asOf));
 Check("missing country", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, null, asOf));
 Check("invalid country", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, "NGA", asOf));
+Check("non-ASCII confusable country denied", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, "KE", asOf));
 Check("ascii only country", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, "NÉ", asOf));
 Check("asset pending", DecisionCode.AssetRightsPending, asset: activeAsset with { Standing = RightsStanding.Pending });
 Check("asset disputed", DecisionCode.AssetRightsDisputed, asset: activeAsset with { Standing = RightsStanding.Disputed });
@@ -65,6 +66,10 @@ Check("monetization not granted", DecisionCode.ActionNotGranted, request: new(as
 Check("no action flag on asset", DecisionCode.OperationDisabled,
     asset: activeAsset with { EnabledActions = MediaRights.Download });
 Check("malformed grant country", DecisionCode.NoMatchingGrant, grants: new[] { goodGrant with { Territory = "A!" } });
+IEnumerable<LicenseGrant> ExcessiveGrants() {
+    for (var i = 0; i < 10_001; i++) yield return goodGrant;
+}
+Check("excessive grant input denied", DecisionCode.EvaluationFailed, grants: ExcessiveGrants());
 IEnumerable<LicenseGrant> ThrowAfterOne()
 {
     yield return goodGrant;
