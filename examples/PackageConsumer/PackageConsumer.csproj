@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- This intentionally consumes the compiled NuGet package, not a project reference. -->
+    <PackageReference Include="OpenMediaRights" Version="0.1.0-preview.1" />
+  </ItemGroup>
+</Project>
