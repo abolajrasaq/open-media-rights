@@ -1,0 +1,19 @@
+name: Policy bug report
+description: Report a reproducible non-sensitive issue
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Do not report security bypass details publicly. Follow SECURITY.md."
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Synthetic reproduction
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected and actual decisions
+    validations:
+      required: true

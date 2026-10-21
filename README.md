@@ -1,5 +1,45 @@
 # Open Media Rights Toolkit
 
-An open-source, fail-closed media licensing permission evaluator for .NET.
+> **Preview v0.1.0-preview.1** — not audited or published to NuGet.
 
-The initial implementation is being reviewed in a separate branch. Source code, tests, CI configuration and documentation will be merged here after validation. This is a preview project, not a legal rights verification service or production-ready authorization system.
+A dependency-free, .NET 8 media rights permission evaluator. Given a media asset, independently verified licence grants and a request, it returns a typed allow/deny decision for streaming, downloading, sharing, monetization or resale.
+
+**This software does not establish copyright ownership or verify grants.** Your backend must validate rights documents, contractual conflicts and user identity, determine trustworthy territory, and enforce every decision at the point of delivery or transaction.
+
+## Quick start
+
+Requires the .NET 8 SDK.
+
+```bash
+dotnet build src/OpenMediaRights/OpenMediaRights.csproj -c Release
+dotnet run --project tests/OpenMediaRights.SmokeTests/OpenMediaRights.SmokeTests.csproj -c Release
+dotnet pack src/OpenMediaRights/OpenMediaRights.csproj -c Release
+```
+
+## Example
+
+```csharp
+using OpenMediaRights;
+
+var assetId = Guid.NewGuid();
+var asset = new MediaAsset(assetId, AssetLifecycle.Active, RightsStanding.Verified, MediaRights.Stream);
+var grant = new LicenseGrant(Guid.NewGuid(), assetId, "NG", GrantVerification.Verified, MediaRights.Stream);
+var decision = MediaRightsPolicy.Evaluate(asset, new[] { grant },
+    new PermissionRequest(assetId, MediaAction.Stream, "NG"));
+Console.WriteLine(decision.Allowed); // true
+```
+
+The host must verify the grant before setting `GrantVerification.Verified`. Everything else is denied by default: suspended assets, pending/disputed/revoked rights, disabled actions, absent or unverified grants, incorrect territory, and invalid or expired date windows.
+
+## Current limitations
+
+- No persistence, DRM, identity, rights document review, billing or takedown management.
+- A verified grant alone cannot override a disabled operational action gate.
+- Country codes are ASCII two-letter *syntax* checks, not authoritative ISO country assignments.
+- Multiple verified grants combine by union. Conflicting exclusive grants and exclusions **must** be resolved upstream.
+- Grants must be supplied as a bounded authoritative snapshot; the evaluator denies if enumeration throws.
+- Development preview only: compile, run CI and independently review licensing/provenance before release.
+
+See [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md) and [LICENSE](LICENSE).
+
+Maintained by [abolajrasaq](https://github.com/abolajrasaq). Open-source under MIT, subject to final provenance review.

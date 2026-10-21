@@ -1,0 +1,22 @@
+name: Build, smoke tests, package
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build library
+        run: dotnet build src/OpenMediaRights/OpenMediaRights.csproj --configuration Release
+      - name: Run synthetic smoke tests
+        run: dotnet run --project tests/OpenMediaRights.SmokeTests/OpenMediaRights.SmokeTests.csproj --configuration Release
+      - name: Run demo
+        run: dotnet run --project examples/BasicUsage/BasicUsage.csproj --configuration Release
+      - name: Validate NuGet packaging
+        run: dotnet pack src/OpenMediaRights/OpenMediaRights.csproj --configuration Release --output ./artifacts

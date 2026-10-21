@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PackageId>OpenMediaRights</PackageId>
+    <Version>0.1.0-preview.1</Version>
+    <Authors>Abolaji Rasaq</Authors>
+    <Description>A dependency-free, fail-closed .NET media rights decision helper.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/abolajrasaq/open-media-rights</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/abolajrasaq/open-media-rights</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>media;rights;licensing;video;authorization</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>
