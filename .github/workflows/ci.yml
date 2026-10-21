@@ -42,3 +42,14 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:5187/demo/rights/stream?territory=US')" = "200"
       - name: Validate NuGet packaging
         run: dotnet pack src/OpenMediaRights/OpenMediaRights.csproj --configuration Release --output ./artifacts
+      - name: Restore isolated consumer from local NuGet package
+        run: dotnet restore examples/PackageConsumer/PackageConsumer.csproj --source "$GITHUB_WORKSPACE/artifacts"
+      - name: Run packaged consumer checks
+        run: dotnet run --no-restore --project examples/PackageConsumer/PackageConsumer.csproj --configuration Release
+      - name: Archive preview package
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-media-rights-preview-package
+          path: artifacts/*.nupkg
+          if-no-files-found: error
+          retention-days: 30
