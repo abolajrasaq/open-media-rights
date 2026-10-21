@@ -4,6 +4,8 @@ namespace OpenMediaRights;
 public static class MediaRightsPolicy
 {
     private const string Worldwide = "WORLDWIDE";
+    // Fail closed if a caller supplies an unbounded or unexpectedly large grant enumeration.
+    private const int MaxGrantsEvaluated = 10_000;
     public static PermissionDecision Evaluate(MediaAsset? asset, IEnumerable<LicenseGrant>? grants, PermissionRequest? request)
     {
         if (request is null || request.AssetId == Guid.Empty) return PermissionDecision.Deny(DecisionCode.InvalidRequest);
@@ -33,7 +35,9 @@ public static class MediaRightsPolicy
         bool scoped = false, verified = false, active = false;
         Guid? matching = null;
         try {
+            var processed = 0;
             foreach (var grant in grants) {
+                if (++processed > MaxGrantsEvaluated) return PermissionDecision.Deny(DecisionCode.EvaluationFailed);
                 if (grant is null || grant.Id == Guid.Empty || grant.AssetId != asset.Id) continue;
                 var scope = NormalizeGrantTerritory(grant.Territory);
                 if (scope is null || (scope != Worldwide && scope != country)) continue;
@@ -56,11 +60,12 @@ public static class MediaRightsPolicy
     private static string? NormalizeCountryCode(string? value) {
         if (value is null || value.Length > 32) return null;
         var candidate = value.Trim().ToUpperInvariant();
-        return candidate.Length == 2 && candidate.All(c => c is >= 'A' and <= 'Z') ? candidate : null;
+        return candidate.Length == 2 && value.Trim().All(c => c is >= 'A' and <= 'Z' or >= 'a' and <= 'z') ? candidate : null;
     }
     private static string? NormalizeGrantTerritory(string? value) {
         if (value is null || value.Length > 32) return null;
         var candidate = value.Trim().ToUpperInvariant();
-        return candidate == Worldwide ? Worldwide : NormalizeCountryCode(candidate);
+        if (candidate == Worldwide) return Worldwide;
+        return NormalizeCountryCode(value);
     }
 }
