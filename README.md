@@ -8,7 +8,7 @@ A dependency-free, .NET 8 media rights permission evaluator. Given a media asset
 
 ## New developer? Start here
 
-Follow the [10-minute quickstart](docs/QUICKSTART.md), review the [trust boundary and architecture](docs/ARCHITECTURE.md), and run the [local HTTP integration example](examples/PolicyApi/README.md).
+Follow the [10-minute quickstart](docs/QUICKSTART.md), review the [trust boundary and architecture](docs/ARCHITECTURE.md), and run the [local HTTP integration example](examples/PolicyApi/README.md). You can also [install the locally generated NuGet package in an independent consumer app](examples/PackageConsumer/README.md) to test the real package boundary. **The preview is not published on NuGet.org.**
 
 Read the [roadmap](docs/ROADMAP.md) to find focused contribution ideas.
 
