@@ -21,4 +21,4 @@ Grant date windows are **start-inclusive, end-exclusive**. Rights grants are add
 
 `PermissionDecision.Allowed` is **not** a content entitlement, media access token, ownership certificate or a contract interpretation. Use server-side enforcement for each protected operation. Do not trust client flags or territory queries.
 
-See [Integration](INTEGRATION.md) and [Policy API demo](../examples/PolicyApi/README.md).
+See [Integration](INTEGRATION.md), [initial threat model](THREAT_MODEL.md), and [Policy API demo](../examples/PolicyApi/README.md).
