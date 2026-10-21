@@ -6,6 +6,12 @@ A dependency-free, .NET 8 media rights permission evaluator. Given a media asset
 
 **This software does not establish copyright ownership or verify grants.** Your backend must validate rights documents, contractual conflicts and user identity, determine trustworthy territory, and enforce every decision at the point of delivery or transaction.
 
+## New developer? Start here
+
+Follow the [10-minute quickstart](docs/QUICKSTART.md), review the [trust boundary and architecture](docs/ARCHITECTURE.md), and run the [local HTTP integration example](examples/PolicyApi/README.md).
+
+Read the [roadmap](docs/ROADMAP.md) to find focused contribution ideas.
+
 ## Quick start
 
 Requires the .NET 8 SDK.
@@ -42,4 +48,4 @@ The host must verify the grant before setting `GrantVerification.Verified`. Ever
 
 See [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md) and [LICENSE](LICENSE).
 
-Maintained by [abolajrasaq](https://github.com/abolajrasaq). Open-source under MIT, subject to final provenance review.
+Maintained by [abolajrasaq](https://github.com/abolajrasaq). MIT-licensed development preview. No independent security certification or external adoption is claimed.
