@@ -14,7 +14,7 @@ You can download the [compiled `.nupkg` from GitHub Releases](https://github.com
 
 Follow the [10-minute quickstart](docs/QUICKSTART.md), review the [trust boundary and architecture](docs/ARCHITECTURE.md), and run the [local HTTP integration example](examples/PolicyApi/README.md). You can also [install the locally generated NuGet package in an independent consumer app](examples/PackageConsumer/README.md) to test the real package boundary. **The preview is not published on NuGet.org.**
 
-Read the [roadmap](docs/ROADMAP.md) to find focused contribution ideas.
+Read the [roadmap](docs/ROADMAP.md) to find focused contribution ideas, and the [threat model](docs/THREAT_MODEL.md) to understand security assumptions and host responsibilities.
 
 ## Quick start
 

@@ -32,6 +32,17 @@ Check("missing country", DecisionCode.InvalidCountryCode, request: new(assetId, 
 Check("invalid country", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, "NGA", asOf));
 Check("non-ASCII confusable country denied", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, "KE", asOf));
 Check("ascii only country", DecisionCode.InvalidCountryCode, request: new(assetId, MediaAction.Stream, "NÉ", asOf));
+Check("non-ASCII grant-country confusable denied", DecisionCode.NoMatchingGrant,
+    grants: new[] { goodGrant with { Territory = "KE" } },
+    request: new(assetId, MediaAction.Stream, "KE", asOf));
+Check("worldwide grant still rejects invalid request country", DecisionCode.InvalidCountryCode,
+    grants: new[] { goodGrant with { Territory = "WORLDWIDE" } },
+    request: new(assetId, MediaAction.Stream, "??", asOf));
+Check("rejected grant cannot authorize", DecisionCode.GrantNotVerified,
+    grants: new[] { goodGrant with { Verification = GrantVerification.Rejected } });
+Check("revoked asset rejects otherwise valid worldwide grant", DecisionCode.AssetRightsRevoked,
+    asset: activeAsset with { Standing = RightsStanding.Revoked },
+    grants: new[] { goodGrant with { Territory = "WORLDWIDE" } });
 Check("asset pending", DecisionCode.AssetRightsPending, asset: activeAsset with { Standing = RightsStanding.Pending });
 Check("asset disputed", DecisionCode.AssetRightsDisputed, asset: activeAsset with { Standing = RightsStanding.Disputed });
 Check("asset revoked", DecisionCode.AssetRightsRevoked, asset: activeAsset with { Standing = RightsStanding.Revoked });
@@ -70,6 +81,10 @@ IEnumerable<LicenseGrant> ExcessiveGrants() {
     for (var i = 0; i < 10_001; i++) yield return goodGrant;
 }
 Check("excessive grant input denied", DecisionCode.EvaluationFailed, grants: ExcessiveGrants());
+Check("exact cap accepts matching last grant", DecisionCode.Allowed,
+    grants: Enumerable.Repeat(goodGrant with { Territory = "US" }, 9_999).Append(goodGrant));
+Check("expired grant followed by active grant still allows", DecisionCode.Allowed,
+    grants: new[] { goodGrant with { EndsAt = asOf.AddMinutes(-1) }, goodGrant with { Id = Guid.NewGuid() } });
 IEnumerable<LicenseGrant> ThrowAfterOne()
 {
     yield return goodGrant;
